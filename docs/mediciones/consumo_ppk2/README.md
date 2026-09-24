@@ -74,5 +74,6 @@ Estimación térmica con 5 V de entrada, P = (VIN − VOUT) × I = 1,7 V × I:
 
 ## Referencias
 
-- [Esquemático de la Tiny Tapeout Demo Board v3](https://github.com/TinyTapeout/tt-demo-pcb)
-- Hoja de datos TLV1117LV, Texas Instruments (SBVS160C)
+- [Esquemático de la Tiny Tapeout Demo Board v3](../../referencias/tt-demoboard-v3-esquematico.pdf): bloque *Power* (F1, FB1) y *3V3 LDO* (U1)
+- [Hoja de datos TLV1117LV](../../referencias/tlv1117lv-datasheet.pdf): tablas 6.3 (condiciones de operación), 6.4 (térmica) y 6.5 (características eléctricas)
+- Repositorio original de la demoboard: https://github.com/TinyTapeout/tt-demo-pcb
