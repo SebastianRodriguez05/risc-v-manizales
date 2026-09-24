@@ -1,0 +1,28 @@
+# Builds de Gowin / Yosys
+build/
+impl/
+*.log
+
+# Simulación (se guardan capturas en img/, no las ondas)
+*.vcd
+*.fst
+*.vvp
+a.out
+
+# KiCad
+*-backups/
+*.kicad_prl
+fp-info-cache
+*.lck
+_autosave-*
+*.bak
+
+# ESP32 / PlatformIO
+.pio/
+build-esp/
+sdkconfig.old
+
+# Editor y sistema
+.vscode/
+*~
+.DS_Store
