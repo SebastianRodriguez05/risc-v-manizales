@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.3.127 (w)1999-2026 BSI
+[*] Thu Sep 17 15:46:46 2026
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/pci/Flash/sim/SPI_Flash.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-21.614302 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 209
+[signals_width] 142
+[sst_expanded] 1
+[sst_vpaned_height] 157
+@28
+tb_spi_slave_flash.CS_N
+tb_spi_slave_flash.MISO
+tb_spi_slave_flash.MOSI
+tb_spi_slave_flash.SCK
+@420
+tb_spi_slave_flash.SCK_HALF
+@22
+tb_spi_slave_flash.cmd_addr[31:0]
+@420
+tb_spi_slave_flash.i
+@23
+tb_spi_slave_flash.rx_byte[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

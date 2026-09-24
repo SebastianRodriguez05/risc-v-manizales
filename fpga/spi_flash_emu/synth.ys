@@ -1,0 +1,3 @@
+read_verilog rtl/spi_slave_flash.v
+read_verilog rtl/top.v
+synth_gowin -top top -family gw2a -vout build/netlist_gw.v
