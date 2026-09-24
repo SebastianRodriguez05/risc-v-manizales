@@ -1,0 +1,2 @@
+read_verilog src/led_blink.v
+synth_gowin -top led -family gw2a -vout build/netlist_gw.v
