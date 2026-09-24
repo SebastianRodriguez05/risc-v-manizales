@@ -1,60 +1,92 @@
-# risc-v-manizales
+ # led_blink — Ejemplo mínimo del flujo Gowin en Tang Primer 20K
 
-Documentación de las pruebas realizadas alrededor del procesador **femto_UN**: desarrollo en FPGA, firmware, instrumentación y diseño de la placa tester para el ASIC fabricado con Tiny Tapeout.
+**Fecha:** 2026-09-07  **Estado:** ✅ Funciona
 
-Cada prueba tiene su propia carpeta con el código, los archivos necesarios para reproducirla y un `README.md` con objetivo, conexiones, pasos, resultados y problemas encontrados.
+![LED parpadeando](img/led_blink.gif)
 
-## Hardware usado
+## Objetivo
 
-- **Sipeed Tang Primer 20K Dock** (FPGA GW2A-LV18PG256C8/I7)
-- **Tiny Tapeout Demo Board v3.2** (RP2040) con el chip femto_UN
-- **ESP32-C6-WROOM-1** (StudioPixels) como maestro SPI de pruebas
-- **Analog Discovery 2** y **Nordic PPK2** para medición
-
-## Estructura del repo
+Hacer parpadear un LED a ~1 Hz para validar el flujo completo de desarrollo en la **Sipeed Tang Primer 20K Dock** usando herramientas por línea de comandos, sin abrir el IDE de Gowin:
 
 ```
-risc-v-manizales/
-├── docs/        # documentación general (toolchain, pinouts, mediciones)
-├── fpga/        # pruebas en la Tang Primer 20K
-├── firmware/    # código para microcontroladores (ESP32, femtoRV32)
-├── pcb/         # placa tester en KiCad
-└── mult_32/     # multiplicador de 32 bits en Verilog
+Verilog ──► Yosys (síntesis) ──► Gowin gw_sh (place & route) ──► openFPGALoader ──► FPGA
+ .v           netlist_gw.v          led.fs (bitstream)
 ```
 
-## Pruebas
+Es la plantilla base para las demás pruebas en FPGA de este repo.
 
-| Prueba | Descripción | Estado |
-|--------|-------------|--------|
-| [led_blink](fpga/led_blink) | Flujo mínimo Yosys + Gowin en Tang Primer 20K 
+## Hardware y herramientas
 
-**Estados:**  Funciona ·  En progreso ·  Falló
+- Sipeed Tang Primer 20K Dock (FPGA **GW2A-LV18PG256C8/I7**, device version C)
+- Yosys (`synth_gowin`), Gowin EDA V1.9.11.03 Education (`gw_sh`), openFPGALoader
+- Instalación del entorno: ver [`docs/toolchain.md`](../../docs/toolchain.md)
 
-## Documentación
+## Estructura
 
-- [Toolchain y entorno de trabajo](docs/toolchain.md): instalación de todas las herramientas y problemas conocidos en Fedora 44.
+```
+led_blink/
+├── Makefile              # orquesta todo el flujo
+├── synth.ys              # script de síntesis de Yosys
+├── pnr.tcl               # script de place & route de Gowin
+├── src/led_blink.v       # diseño en Verilog
+├── constraints/led.cst   # asignación de pines
+└── img/                  # evidencia de la prueba
+```
 
-## Cómo empezar
+## Pines
 
-1. Montar el entorno siguiendo [`docs/toolchain.md`](docs/toolchain.md).
-2. Probar el flujo con [`fpga/led_blink`](fpga/led_blink), que sirve como plantilla para los demás proyectos en FPGA.
+| Señal | Pin | Descripción |
+|-------|-----|-------------|
+| `Clock` | H11 | Oscilador de 27 MHz de la placa |
+| `IO_voltage` | L14 | LED |
 
-## Convenciones
+## Cómo funciona el diseño
 
-- **Una prueba = una carpeta con su `README.md`.** No se sube código sin documentación.
-- Las capturas, fotos y GIFs van en una carpeta `img/` dentro de cada prueba.
-- Los archivos generados (`build/`, logs, ondas `.vcd`) no se suben; ver `.gitignore`.
-- Mensajes de commit con el nombre de la prueba como prefijo:
-  `led_blink: ...`, `docs: ...`, `spi_flash_emu: ...`
+Un contador de 24 bits cuenta ciclos del reloj de 27 MHz. Al llegar a `13_499_999` (≈ 0,5 s) se reinicia y genera un pulso de un ciclo (`count_value_flag`) que invierte el estado del LED. Así el LED cambia cada 0,5 s y parpadea a ~1 Hz.
 
-## Referencias
+## Cómo reproducir
 
-- [cicamargoba/femto_UN](https://github.com/cicamargoba/femto_UN): repositorio de referencia del femto_UN
-- [ArthurHeymans/tang_20k_spi_flash](https://github.com/ArthurHeymans/tang_20k_spi_flash): base del emulador de flash SPI
+```bash
+cd fpga/led_blink
+make            # síntesis + place & route
+make program    # programa la FPGA (en SRAM, se pierde al apagar)
+make clean      # borra build/
+```
 
-## Licencia
+Si Gowin está instalado en otra ruta:
 
-Ver [LICENSE](LICENSE).
+```bash
+make GW_SH=/ruta/a/tu/IDE/bin/gw_sh
+```
+
+Pasos individuales:
+
+| Target | Qué hace | Salida |
+|--------|----------|--------|
+| `make synth` | Yosys sintetiza el Verilog para GW2A | `build/netlist_gw.v` |
+| `make pnr` | Gowin hace place & route con el `.cst` | `build/led/impl/pnr/led.fs` |
+| `make program` | openFPGALoader carga el bitstream | — |
+
+Para verificar que la placa está conectada:
+
+```bash
+openFPGALoader --scan-usb
+```
+
+## Resultados
+
+El LED en L14 parpadea a ~1 Hz tras `make program`.
+
+## Problemas y soluciones
+
+- **`gw_sh` intenta abrir una ventana o falla sin display:** el Makefile exporta `QT_QPA_PLATFORM := offscreen` para que Gowin corra en modo headless.
+- **`create_project` cambia el directorio de trabajo:** por eso `pnr.tcl` guarda `[pwd]` en `root_dir` antes de llamarlo y usa rutas absolutas en `add_file`.
+- **El bitstream no queda en `build/`:** Gowin lo genera anidado en `build/led/impl/pnr/led.fs`.
+- **Gowin no arranca en Fedora 44:** conflicto con `libfreetype.so.6` y `libstdc++.so.6` incluidas en Gowin. Ver [`docs/toolchain.md`](../../docs/toolchain.md#2-gowin-eda).
+
+## Usar como plantilla
+
+Para un proyecto nuevo, copiar esta carpeta y cambiar:
 
 1. `TOP`, `SRC`, `CST` y `BITSTREAM` en el `Makefile`
 2. `read_verilog` y `-top` en `synth.ys`
