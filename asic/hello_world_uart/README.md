@@ -16,7 +16,7 @@ La memoria de programa es un **ESP32-C6 que emula la flash**, porque el módulo 
 └──────────────┘                 └──────────────────┘  RXD   └────────────┘
 ```
 
-Siguiente paso: repetir la prueba con una flash real de 3,3 V a 24 MHz y conectar la RAM SPI.
+Siguiente prueba: la RAM SPI, en [`asic/ram_test`](../ram_test).
 
 ## Hardware y herramientas
 
