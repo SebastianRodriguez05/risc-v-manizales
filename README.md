@@ -1,6 +1,6 @@
 # RISC-V-Manizales
 
-Pruebas y documentación del ecosistema **femto_UN**: emulador de flash SPI en Tang Primer 20K, placa tester en KiCad, multiplicador `mult_32` y flujo Yosys + Gowin.
+Pruebas y documentación del ecosistema **femto_UN**: emulador de flash SPI en Tang Primer 20K, placa tester en KiCad y flujo Yosys + Gowin.
 
 Universidad Nacional de Colombia, sede Manizales.
 
