@@ -1,4 +1,4 @@
-# ris-v-manizales
+# RISC-V-Manizales
 
 Pruebas y documentación del ecosistema **femto_UN**: emulador de flash SPI en Tang Primer 20K, placa tester en KiCad, multiplicador `mult_32` y flujo Yosys + Gowin.
 
